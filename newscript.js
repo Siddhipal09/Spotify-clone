@@ -12,7 +12,7 @@
         const element = as[index];
         if(element.href.endsWith(".mp3"))
             {
-                songs.push(element.href)
+                songs.push(element.href.split("/songs/")[1])
             }
         
      }
@@ -22,17 +22,27 @@
  async function main() {
     let songs = await getSongs();
     console.log(songs);
+    let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
+    let songsHTML = ''; // Accumulator for song list HTML
+
+    for (const song of songs) {
+        songsHTML += `<li>${song.replaceAll("%20", " ")}</li>`;
+    }
+
+    // Set the HTML content of the <ul> element once after the loop
+    songUL.innerHTML = songsHTML;
+    
     if (songs.length > 0) {
         var audio = new Audio(songs[0]);
         audio.play();
 
         audio.addEventListener("loadeddata", () => {
-            let duration = audio.duration;
-            console.log(duration);
+            
+            console.log(audio.duration, audio.currentSrc, audio.currentTime);
         });
     } else {
         console.error("No songs available.");
     }
-}
+ }
 
 main();
