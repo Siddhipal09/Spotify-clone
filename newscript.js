@@ -23,17 +23,21 @@
     let songs = await getSongs();
     console.log(songs);
     let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
-    let songsHTML = ''; // Accumulator for song list HTML
+    
 
     for (const song of songs) {
-        songsHTML += `<li>${song.replaceAll("%20", " ")}</li>`;
+        songUL.innerHTML += `<li>${song.replaceAll("%20", " ")}</li>`;
     }
 
-    // Set the HTML content of the <ul> element once after the loop
-    songUL.innerHTML = songsHTML;
+   
+   
     
     if (songs.length > 0) {
-        var audio = new Audio(songs[0]);
+        let audioSrc = `http://127.0.0.1:5500/songs/${songs[0]}`;
+        console.log("Audio source:", audioSrc);
+
+        var audio = new Audio(audioSrc);
+       // var audio = new Audio(songs[0]);
         audio.play();
 
         audio.addEventListener("loadeddata", () => {
