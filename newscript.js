@@ -25,12 +25,14 @@
      return songs
 
  }
- const playmusic =(track)=>{
+ const playmusic =(track, pause= false)=>{
     currentsong.src = "/songs/"+ track
     // let audio = new Audio("/songs/"+track)
+    if(!pause){
      currentsong.play()
      play.src = "pause.svg"
-     document.querySelector(".songinfo").innerHTML = track
+    }
+     document.querySelector(".songinfo").innerHTML = decodeURI(track)
      document.querySelector(".songtime").innerHTML = "00:00 / 00:00"
  }
  async function main() {
@@ -38,6 +40,7 @@
     //get all the songs from the playlist
     let songs = await getSongs();
     console.log(songs);
+    playmusic(songs[0], true)
     //show all the songs in the playlist
     let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
     
@@ -94,8 +97,24 @@
     //listen for timeupdate event
     currentsong.addEventListener("timeupdate", ()=>{
         console.log(currentsong.currentTime, currentsong.duration);
-        document.querySelector(".songtime").innerHTML = `${formatTime(currentsong.currentTime)}: ${formatTime(currentsong.duration)}`
+        document.querySelector(".songtime").innerHTML = `${formatTime(currentsong.currentTime)}/ ${formatTime(currentsong.duration)}`
+        document.querySelector(".circle").style.left = (currentsong.currentTime/ currentsong.duration)*100 + "%";
     })
+    // add an event listener to seekbar
+    document.querySelector(".circle").parentElement.addEventListener("click", e => {
+        const rect = e.target.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const newTime = (offsetX / rect.width) * currentsong.duration;
+        currentsong.currentTime = newTime;
+    });
+    // add an event listener for hamburger
+    document.querySelector(".hamburger").addEventListener("click", () =>{
+      document.querySelector(".left").style.left = "0"
+    })
+     // add an event listener for close button
+     document.querySelector(".close").addEventListener("click", () =>{
+        document.querySelector(".left").style.left = "-120%"
+      })
  }
 
 main();
