@@ -1,5 +1,10 @@
  console.log("hello world")
  let currentsong = new Audio();
+ const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
  async function getSongs()
  {
     let a = await fetch("http://127.0.0.1:5500/songs/")
@@ -85,6 +90,11 @@
                currentsong.pause()
                play.src = "play.svg"
             }
+    })
+    //listen for timeupdate event
+    currentsong.addEventListener("timeupdate", ()=>{
+        console.log(currentsong.currentTime, currentsong.duration);
+        document.querySelector(".songtime").innerHTML = `${formatTime(currentsong.currentTime)}: ${formatTime(currentsong.duration)}`
     })
  }
 
