@@ -21,32 +21,13 @@
         const element = as[index];
         if(element.href.endsWith(".mp3"))
             {
-                songs.push(element.href.split(`/${folder}`)[1])
+                songs.push(element.href.split(`/${folder}/`)[1]);
             }
         
      }
-     return songs
-
- }
- const playmusic =(track, pause= false)=>{
-    currentsong.src = `/${currFolder}`+ track
-    // let audio = new Audio("/songs/"+track)
-    if(!pause){
-     currentsong.play()
-     play.src = "pause.svg"
-    }
-     document.querySelector(".songinfo").innerHTML = decodeURI(track)
-     document.querySelector(".songtime").innerHTML = "00:00 / 00:00"
- }
- async function main() {
-    
-    //get all the songs from the playlist
-     songs = await getSongs("songs/retro");
-    console.log(songs);
-    playmusic(songs[0], true)
-    //show all the songs in the playlist
+      //show all the songs in the playlist
     let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
-    
+    songUL.innerHTML = ""
 
     for (const song of songs) {
         songUL.innerHTML += `<li><img src="music.svg" alt="">
@@ -59,7 +40,88 @@
             <img src="play.svg" alt="">
         </div></li>`;
     }
+      // attach an event listener to each song
+    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e=>{
+        e.addEventListener("click", ()=>{
+            console.log(e.querySelector(".info").firstElementChild.innerHTML)
+            let track = e.querySelector(".info").firstElementChild.innerHTML.trim()
+            playmusic(track)
+        })
+        
+        
+    })
+     
+     return songs;
 
+ }
+ const playmusic =(track, pause = false)=>{
+    currentsong.src = `/${currFolder}/${track}`;
+    // let audio = new Audio("/songs/"+track)
+    if(!pause){
+     currentsong.play()
+     play.src = "pause.svg"
+    }
+     document.querySelector(".songinfo").innerHTML = decodeURI(track)
+     document.querySelector(".songtime").innerHTML = "00:00 / 00:00"
+ }
+ async function displayAlbums(){
+    
+    let a = await fetch(`http://127.0.0.1:5500/songs/`)
+    let response= await a.text();
+    console.log(response)
+    let div= document.createElement("div")
+    div.innerHTML= response;
+    let anchors = div.getElementsByTagName("a")
+    let cardContainer = document.querySelector(".cardContainer")
+    let array = Array.from(anchors)
+    for (let index = 2; index < array.length; index++) {
+        const e= array[index];
+        console.log(e)
+        
+    
+   // Array.from(anchors).forEach(async e=>{
+      //  console.log(e.href)
+        if(e.href.includes("/songs")){
+            let folder = e.href.split("/").slice(-1)[0]
+            console.log(folder)
+            //get the meta data
+           let a = await fetch(`http://127.0.0.1:5500/songs/${folder}/info.json`)
+           if (!a.ok) {
+            throw new Error(`Failed to fetch: ${a.status} ${a.statusText}`);
+        }
+           let response= await a.json();
+           console.log(response)
+             
+           cardContainer.innerHTML = cardContainer.innerHTML + `<div data-folder="retro" class="card">
+           <div class="play">
+               <svg width="44px" height="44px" viewBox="0 0 24.00 24.00" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#2bd455"><g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(1.5600000000000005,1.5600000000000005), scale(0.87)"><rect x="0" y="0" width="24.00" height="24.00" rx="12" fill="#121212" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path fill="#3ac81e" fill-rule="evenodd" d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm8.528-4.882a1 1 0 0 1 1.027.05l6 4a1 1 0 0 1 0 1.664l-6 4A1 1 0 0 1 9 16V8a1 1 0 0 1 .528-.882z" clip-rule="evenodd"></path></g></svg>
+           </div>
+           <img src="https://i.scdn.co/image/ab67706f00000002a6a35d85da2b230f63a0005a" alt="">
+           <h2>${response.title}</h2>
+           <p>${response.description}</p>
+       </div>`
+       }
+    }
+        //load the playlist whenever card is clicked
+      Array.from(document.getElementsByClassName("card")).forEach(e =>{
+        console.log(e)
+        e.addEventListener("click", async item=>{
+            songs = await getSongs(`songs/${item.currentTarget.dataset.folder}`)
+            playmusic(songs[0])
+        })
+      })
+    }
+ 
+ async function main() {
+    
+    //get all the songs from the playlist
+     songs = await getSongs("songs/retro");
+    console.log(songs);
+    playmusic(songs[0], true)
+
+    // display all the albums on the page
+   await displayAlbums()
+   
    
    
     //play the first song
@@ -76,15 +138,7 @@
     // } else {
     //     console.error("No songs available.");
     // }
-    // attach an event listener to each song
-    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e=>{
-        e.addEventListener("click", element=>{
-            console.log(e.querySelector(".info").firstElementChild.innerHTML)
-            playmusic(e.querySelector(".info").firstElementChild.innerHTML.trim())
-        })
-        
-        
-    })
+   
     // attach an event listener to play, next and previous
     play.addEventListener("click", ()=>{
         if(currentsong.paused)
@@ -142,6 +196,7 @@
         console.log("setting volume to", e.target.value)
         currentsong.volume = parseInt(e.target.value)/100
       })
+     
  }
 
 main();
