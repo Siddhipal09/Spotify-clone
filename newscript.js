@@ -1,14 +1,16 @@
  console.log("hello world")
  let currentsong = new Audio();
  let songs;
+ let currFolder;
  const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
- async function getSongs()
+ async function getSongs(folder)
  {
-    let a = await fetch("http://127.0.0.1:5500/songs/")
+    currFolder = folder;
+    let a = await fetch(`http://127.0.0.1:5500/${folder}/`)
     let response= await a.text();
     console.log(response)
     let div= document.createElement("div")
@@ -19,7 +21,7 @@
         const element = as[index];
         if(element.href.endsWith(".mp3"))
             {
-                songs.push(element.href.split("/songs/")[1])
+                songs.push(element.href.split(`/${folder}`)[1])
             }
         
      }
@@ -27,7 +29,7 @@
 
  }
  const playmusic =(track, pause= false)=>{
-    currentsong.src = "/songs/"+ track
+    currentsong.src = `/${currFolder}`+ track
     // let audio = new Audio("/songs/"+track)
     if(!pause){
      currentsong.play()
@@ -39,7 +41,7 @@
  async function main() {
     
     //get all the songs from the playlist
-     songs = await getSongs();
+     songs = await getSongs("songs/retro");
     console.log(songs);
     playmusic(songs[0], true)
     //show all the songs in the playlist
@@ -134,6 +136,11 @@
         if((index+1) < songs.length){
          playmusic(songs[index+1])
         }
+      })
+      // add an event to volume 
+      document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change", (e)=>{
+        console.log("setting volume to", e.target.value)
+        currentsong.volume = parseInt(e.target.value)/100
       })
  }
 
