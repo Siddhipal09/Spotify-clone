@@ -9,6 +9,7 @@
 body{
     background-color: black;
     color: white;
+   
 }
 
 
@@ -50,6 +51,7 @@ body{
 .library{
     min-height: 75vh;
     position: relative;
+   
 }
 .footer{
     display: flex;
@@ -111,6 +113,10 @@ body{
     padding: 16px;
    
 }
+.spotifyPlaylists h1{
+    padding: 16px;
+   
+}
 .cardContainer{
     margin: 30px;
     display: flex;
@@ -142,7 +148,7 @@ body{
 }
 .playbar{
     position: fixed;
-    bottom: 20px;
+    bottom: 25px;
     filter: invert(1);
     background-color: #dad5d5;
     border-radius: 15px;
@@ -174,6 +180,9 @@ body{
 .songlist .info{
     font-size: 13px;
     width: 344px;
+}
+.info div{
+    word-break: break-all;
 }
 .songlist ul li{
     list-style-type: none;
@@ -221,10 +230,12 @@ body{
 .songbuttons img{
     cursor: pointer;
     }
-.songinfo .songtime{
+.songinfo, .songtime{
     color: rgb(246, 241, 241);
     padding: 0 12px;
+    width: 250px;
 }
+
 .abovebar{
     display: flex;
     justify-content: space-between;
@@ -247,6 +258,15 @@ body{
     }
     .right{
         width: 100vw;
+        margin: 0;
+    }
+    .abovebar{
+        flex-direction: column;
+        gap: 23px;
+        align-items: center;
+    }
+    .songinfo, .songtime{
+        width: auto;
     }
     .playbar{
         width: calc(100vw - 60px);

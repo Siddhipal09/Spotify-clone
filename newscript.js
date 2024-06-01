@@ -1,5 +1,6 @@
  console.log("hello world")
  let currentsong = new Audio();
+ let songs;
  const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
@@ -38,7 +39,7 @@
  async function main() {
     
     //get all the songs from the playlist
-    let songs = await getSongs();
+     songs = await getSongs();
     console.log(songs);
     playmusic(songs[0], true)
     //show all the songs in the playlist
@@ -97,7 +98,7 @@
     //listen for timeupdate event
     currentsong.addEventListener("timeupdate", ()=>{
         console.log(currentsong.currentTime, currentsong.duration);
-        document.querySelector(".songtime").innerHTML = `${formatTime(currentsong.currentTime)}/ ${formatTime(currentsong.duration)}`
+        document.querySelector(".songtime").innerHTML = `${formatTime(currentsong.currentTime)} / ${formatTime(currentsong.duration)}`
         document.querySelector(".circle").style.left = (currentsong.currentTime/ currentsong.duration)*100 + "%";
     })
     // add an event listener to seekbar
@@ -114,6 +115,25 @@
      // add an event listener for close button
      document.querySelector(".close").addEventListener("click", () =>{
         document.querySelector(".left").style.left = "-120%"
+      })
+      //add an event listener to previous and next
+      previous.addEventListener("click", () =>{
+        console.log(" Previous clicked")
+        console.log(currentsong)
+        let index = songs.indexOf(currentsong.src.split("/").slice(-1)[0])
+        console.log(songs, index)
+        if((index-1) >= 0){
+         playmusic(songs[index-1])
+        }
+      })
+      next.addEventListener("click", () =>{
+        console.log(" Next clicked")
+         
+        let index = songs.indexOf(currentsong.src.split("/").slice(-1)[0])
+        console.log(songs, index)
+        if((index+1) < songs.length){
+         playmusic(songs[index+1])
+        }
       })
  }
 
