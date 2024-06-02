@@ -288,7 +288,7 @@ body {
     gap: 12px;
     cursor: pointer;
 }
-.range{
+.range input{
     cursor: pointer;
 }
 
@@ -360,6 +360,7 @@ body {
 
     .hamburger {
         display: block;
+        cursor: pointer;
     }
 
     .card {
